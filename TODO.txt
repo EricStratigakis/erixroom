@@ -1,3 +1,23 @@
 -> tdd the basics of the server
 -> once this is complete, we can test set name functionality
 -> State = GQLChangeName(state, newName)ClientStateResponse
+
+-> do i re introduce redux into the server again??
+
+-> client sends Client State + extra data if
+    -> gql recives based on typedefs (i.e. no pubsub)
+    -> take sthe data to redux, and process actions, 
+    -> filters data and returns a new client State.
+
+    i.e. a serverState to gql is differnt than serverStateT (what we want o woork with)
+
+
+client Redux Actions:
+    -> welcome
+        -> client sends client state (userid saved in local storage)
+        -> sets the inital client state (again, get this from the server)
+            (but then we dont need local storage!)
+    -> setName
+        -> client sends client state + new name
+        -> server updates the name in all apropriate places (inroom and if host)
+        

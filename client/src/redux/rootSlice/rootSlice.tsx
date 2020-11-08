@@ -1,7 +1,7 @@
 // import { gql, useMutation } from "@apollo/client";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-// import { v1 as uuid } from "uuid";
-import { ClinetStateT, SetNameActionT } from "../../clientTypes";
+import { v1 as uuid } from "uuid";
+import { ClinetStateT } from "../../../../appTypes";
 import { initialState } from "../states";
 
 const rootSlice = (state: ClinetStateT = initialState) =>
@@ -9,6 +9,13 @@ const rootSlice = (state: ClinetStateT = initialState) =>
     name: "rootSlice",
     initialState: state,
     reducers: {
+      welcome(state: ClinetStateT) {
+        window.localStorage.setItem(
+          "userid",
+          window.localStorage.getItem("userid") || uuid()
+        );
+        // client state = welcomeServer(state)
+      },
       setName(state: ClinetStateT, action: PayloadAction<string>) {
         // dont worry about these updates, we get the entire room, and user from the server
         //    this is to ensure that the server and room remain in sync, and so that we only

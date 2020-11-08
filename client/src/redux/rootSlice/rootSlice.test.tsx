@@ -12,6 +12,33 @@ describe("rootslice defenition", () => {
   });
 });
 
+describe("welcome", () => {
+  test("welcome action creator", () => {
+    const myRootSlice = rootSlice(blankState);
+    expect(myRootSlice.actions.welcome()).toStrictEqual({
+      type: "rootSlice/welcome",
+    });
+  });
+  // test("welcome sets the user name", () => {
+  //   const myRootSlice = rootSlice(blankState);
+  //   expect(
+  //     myRootSlice.reducer(blankState, {
+  //       type: "rootSlice/welcome",
+  //     })
+  //   ).toStrictEqual({
+  //     clientRoomid: "1234",
+  //     user: { userid: "4321", name: "eric", online: true },
+  //     room: {
+  //       roomid: "homeroom",
+  //       host: { userid: "homid", name: "homie", online: true },
+  //       users: [{ userid: "4321", name: "eric", online: true }],
+  //     },
+  //   });
+  //   // myRootSlice.actions.setName("eric")
+  //   // expect()
+  // });
+});
+
 describe("setName", () => {
   test("setName action creator", () => {
     const myRootSlice = rootSlice(blankState);

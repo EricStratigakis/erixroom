@@ -1,13 +1,13 @@
-import { v1 as uuid } from "uuid";
-import { UserT, ClinetStateT } from "../clientTypes";
+// import { v1 as uuid } from "uuid";
+import { UserT, ClinetStateT, ServerStateT } from "./appTypes";
 
 const initialUser: UserT = {
-  userid: window.localStorage.getItem("userid") || uuid(),
-  name: window.localStorage.getItem("name") || "YOUR NAME HERE",
+  userid: "some uuid()",
+  name: "YOUR NAME HERE",
   online: true,
 };
 
-export const initialState: ClinetStateT = {
+export const initialClientState: ClinetStateT = {
   clientRoomid: window.localStorage.getItem("clientRoomid") || "homeroom",
   user: initialUser,
   room: {
@@ -16,7 +16,6 @@ export const initialState: ClinetStateT = {
     users: [initialUser],
   },
 };
-
 export const blankState: ClinetStateT = {
   clientRoomid: "1234",
   user: {
@@ -33,4 +32,19 @@ export const blankState: ClinetStateT = {
     },
     users: [initialUser],
   },
+};
+
+const homie: UserT = {
+  userid: "homid",
+  name: "homie",
+  online: true,
+};
+export const initialServerState: ServerStateT = {
+  rooms: [
+    {
+      roomid: "homeroom",
+      host: homie,
+      users: [homie],
+    },
+  ],
 };
