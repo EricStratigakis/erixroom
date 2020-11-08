@@ -16,6 +16,9 @@ const rootSlice = (state: ClinetStateT = initialState) =>
         // window.localStorage.setItem("name", action.payload);
         const newName = action.payload;
 
+        // API CALL TO GQL and recive tnew USER + ROOM
+        // State = GQLChangeName(state, newName)ClientStateResponse
+
         // state.user.name = name;
       },
       // setClientRoomid(state: ClinetStateT, action: PayloadAction<string>) {

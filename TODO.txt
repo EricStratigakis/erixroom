@@ -1,0 +1,3 @@
+-> tdd the basics of the server
+-> once this is complete, we can test set name functionality
+-> State = GQLChangeName(state, newName)ClientStateResponse
