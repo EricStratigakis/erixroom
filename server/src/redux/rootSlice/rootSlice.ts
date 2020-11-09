@@ -7,6 +7,8 @@ import {
   ServerStateT,
   UserT,
   SetNameServerActionT,
+  GenerateNewRoomInputT,
+  JoinExistingRoomInputT,
 } from "../../../../appTypes";
 import { initailServerState } from "../../../../testObjects/serverStates";
 
@@ -52,8 +54,11 @@ const rootSlice = (state: ServerStateT = initailServerState) =>
           state.rooms[roomid].host.name = name;
         }
       },
-      generateNewRoom(state: ServerStateT, action: PayloadAction<string>) {
-        const userid = action.payload;
+      generateNewRoom(
+        state: ServerStateT,
+        action: PayloadAction<GenerateNewRoomInputT>
+      ) {
+        const { userid } = action.payload;
         if (state.users[userid].roomid !== "homeroom") {
           throw new ApolloError("Can only Generate from homeroom");
         }
@@ -76,10 +81,21 @@ const rootSlice = (state: ServerStateT = initailServerState) =>
         );
         state.rooms[newRoomid] = newRoom;
       },
-      // joinExisitingRoom(state: ClinetStateT, action: PayloadAction<string>) {
-      //   window.localStorage.setItem("clientRoomid", action.payload);
-      //   state.clientRoomid = action.payload;
-      // },
+      joinExistingRoom(
+        state: ServerStateT,
+        action: PayloadAction<JoinExistingRoomInputT>
+      ) {
+        const { userid, newRoomid } = action.payload;
+        if (state.users[userid].roomid !== "homeroom") {
+          throw new ApolloError("Can only Join A room from homeroom");
+        }
+        if (userid === "homid") {
+          throw new ApolloError("Homie can't leave the homeroom");
+        }
+        if (!state.users[userid].online) {
+          throw new ApolloError("An Offline User cant join a room");
+        }
+      },
       // leaveCurrentRoom(state: ClinetStateT, action: PayloadAction<void>) {},
       // setRoom(state: ClinetStateT, action: PayloadAction<RoomT>) {
       //   window.localStorage.setItem("clientRoomid", action.payload.roomid);
