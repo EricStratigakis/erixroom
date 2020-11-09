@@ -10,6 +10,7 @@ import {
   SetNameInputT,
   WelcomeInputT,
   RoomT,
+  LeaveCurrentRoomInputT,
 } from "../../../../appTypes";
 import { initailServerState } from "../../../../testObjects/serverStates";
 
@@ -110,11 +111,35 @@ const rootSlice = (state: ServerStateT = initailServerState) =>
         );
         state.rooms[newRoomid] = newRoom;
       },
-      // leaveCurrentRoom(state: ClinetStateT, action: PayloadAction<void>) {},
-      // setRoom(state: ClinetStateT, action: PayloadAction<RoomT>) {
-      //   window.localStorage.setItem("clientRoomid", action.payload.roomid);
-      //   state.room = action.payload;
-      // },
+      leaveCurrentRoom(
+        state: ServerStateT,
+        action: PayloadAction<LeaveCurrentRoomInputT>
+      ) {
+        const { userid } = action.payload;
+        const currRoomid = state.users[userid].roomid;
+        if (currRoomid === "homeroom") {
+          throw new ApolloError("Cant Leave the homeroom");
+        }
+        const newUser = {
+          ...state.users[userid],
+          roomid: "homeroom",
+        };
+        state.rooms["homeroom"].users = [
+          ...state.rooms["homeroom"].users,
+          newUser,
+        ];
+        state.rooms[currRoomid].users = state.rooms[currRoomid].users.filter(
+          (u) => u.userid !== userid
+        );
+        state.users[userid] = newUser;
+        if (state.rooms[currRoomid].host.userid === userid) {
+          if (state.rooms[currRoomid].users.length === 0) {
+            delete state.rooms[currRoomid];
+          } else {
+            state.rooms[currRoomid].host = state.rooms[currRoomid].users[0];
+          }
+        }
+      },
     },
   });
 

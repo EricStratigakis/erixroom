@@ -9,6 +9,7 @@ import {
   newbaccaServerState,
   ericHostRoomASonjaInHomeroomOnlineSereverState,
   ericHostRoomASonjaInRoomAOnlineSereverState,
+  ericInHomeOnlineSonjaHostRoomAServerState,
 } from "../../../../testObjects/serverStates";
 import { ApolloError } from "apollo-server";
 import { homid } from "../../../../testObjects/users";
@@ -194,7 +195,6 @@ describe("joinExistingRoom", () => {
       });
     }).toThrow(new ApolloError("cant join a room that does not exist"));
   });
-
   test("sonja joins eric's roomA", () => {
     expect(
       myRootSlice.reducer(ericHostRoomASonjaInHomeroomOnlineSereverState, {
@@ -202,5 +202,45 @@ describe("joinExistingRoom", () => {
         payload: { userid: "sonjaid", newRoomid: "RoomA" },
       })
     ).toStrictEqual(ericHostRoomASonjaInRoomAOnlineSereverState);
+  });
+});
+
+describe("leaveCurrentRoom", () => {
+  const myRootSlice = rootSlice();
+  test("leaveCurrentRoom action creator", () => {
+    expect(
+      myRootSlice.actions.leaveCurrentRoom({
+        userid: "ericid",
+      })
+    ).toStrictEqual({
+      type: "rootSlice/leaveCurrentRoom",
+      payload: {
+        userid: "ericid",
+      },
+    });
+  });
+  test("leaveCurrentRoom throws error if userid in homeroom", () => {
+    expect(() => {
+      myRootSlice.reducer(ericaHostRoomAOnlineServerState, {
+        type: "rootSlice/leaveCurrentRoom",
+        payload: { userid: "homid" },
+      });
+    }).toThrow(new ApolloError("Cant Leave the homeroom"));
+  });
+  test("eric is alone as host leaves his room", () => {
+    expect(
+      myRootSlice.reducer(ericHostRoomAOnlineServerState, {
+        type: "rootSlice/leaveCurrentRoom",
+        payload: { userid: "ericid" },
+      })
+    ).toStrictEqual(ericInHomeOnlineServerState);
+  });
+  test("eric is host and leaves sonja in charge", () => {
+    expect(
+      myRootSlice.reducer(ericHostRoomASonjaInRoomAOnlineSereverState, {
+        type: "rootSlice/leaveCurrentRoom",
+        payload: { userid: "ericid" },
+      })
+    ).toStrictEqual(ericInHomeOnlineSonjaHostRoomAServerState);
   });
 });
