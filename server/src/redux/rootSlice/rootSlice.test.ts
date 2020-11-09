@@ -8,6 +8,10 @@ import {
   ericaHostRoomAOnlineServerState,
   newbaccaServerState,
 } from "../../../../testObjects/serverStates";
+import { ApolloError } from "apollo-server";
+import { homieAlone } from "../../../../testObjects/rooms";
+import { ericInRoomAOnline, homid } from "../../../../testObjects/users";
+import { UserT } from "../../../../appTypes";
 
 describe("rootslice defenition", () => {
   const myRootSlice = rootSlice();
@@ -21,7 +25,6 @@ describe("rootslice defenition", () => {
     expect(myRootSlice.actions.setName.type).toStrictEqual("rootSlice/setName");
   });
 });
-
 describe("welcome", () => {
   const myRootSlice = rootSlice();
   test("welcome action creator", () => {
@@ -49,7 +52,6 @@ describe("welcome", () => {
   //test("welcome reactivates an old user that is the host of a room", () => {
   //    can only be tested when we have ability to leave room
 });
-
 describe("setName", () => {
   const myRootSlice = rootSlice();
   test("setName action creator", () => {
@@ -60,7 +62,7 @@ describe("setName", () => {
       payload: { userid: "newid", name: "newbacca" },
     });
   });
-  test("setName action creator", () => {
+  test("setName for new user", () => {
     expect(
       myRootSlice.reducer(WelcomeServerState, {
         type: "rootSlice/setName",
@@ -75,5 +77,68 @@ describe("setName", () => {
         payload: { userid: "ericid", name: "erica" },
       })
     ).toStrictEqual(ericaHostRoomAOnlineServerState);
+  });
+});
+
+describe("generateNewRoom", () => {
+  const myRootSlice = rootSlice();
+  test("generateNewRoom action creator", () => {
+    expect(myRootSlice.actions.generateNewRoom("ericid")).toStrictEqual({
+      type: "rootSlice/generateNewRoom",
+      payload: "ericid",
+    });
+  });
+  test("generateNewRoom throws error if userid not in homeroom", () => {
+    expect(() => {
+      myRootSlice.reducer(ericaHostRoomAOnlineServerState, {
+        type: "rootSlice/generateNewRoom",
+        payload: "ericid",
+      });
+    }).toThrow(new ApolloError("Can only Generate from homeroom"));
+  });
+  test("generateNewRoom throws error if homie tries to generate a room", () => {
+    expect(() => {
+      myRootSlice.reducer(initailServerState, {
+        type: "rootSlice/generateNewRoom",
+        payload: "homid",
+      });
+    }).toThrow(new ApolloError("Homie can't leave the homeroom"));
+  });
+  test("generateNewRoom throws error if user is offline", () => {
+    // should never see this in code by design
+    expect(() => {
+      myRootSlice.reducer(ericInHomeOfflineServerState, {
+        type: "rootSlice/generateNewRoom",
+        payload: "ericid",
+      });
+    }).toThrow(new ApolloError("An Offline User cant create a room"));
+  });
+  test("eric generates new room", () => {
+    const res = myRootSlice.reducer(ericInHomeOnlineServerState, {
+      type: "rootSlice/generateNewRoom",
+      payload: "ericid",
+    });
+    const newRoomid = res.users["ericid"].roomid;
+    expect(newRoomid).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    );
+    const newEric: UserT = {
+      roomid: newRoomid,
+      name: "eric",
+      online: true,
+      userid: "ericid",
+    };
+    expect(res.rooms[newRoomid]).toStrictEqual({
+      users: [newEric],
+      host: newEric,
+      roomid: newRoomid,
+    });
+    expect(res.rooms["homeroom"]).toStrictEqual(
+      initailServerState.rooms["homeroom"]
+    );
+    expect(res.users).toStrictEqual({
+      homid: homid,
+      ericid: newEric,
+    });
   });
 });

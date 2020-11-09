@@ -1,6 +1,7 @@
 // import { gql, useMutation } from "@apollo/client";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-// import { v1 as uuid } from "uuid";
+import { ApolloError } from "apollo-server";
+import { v1 as uuid } from "uuid";
 import {
   ClinetStateT,
   ServerStateT,
@@ -51,14 +52,30 @@ const rootSlice = (state: ServerStateT = initailServerState) =>
           state.rooms[roomid].host.name = name;
         }
       },
-      // setClientRoomid(state: ClinetStateT, action: PayloadAction<string>) {
-      //   window.localStorage.setItem("clientRoomid", action.payload);
-      //   state.clientRoomid = action.payload;
-      // },
-      // // generateNewRoom(state: ClinetStateT, action: PayloadAction<string>) {
-      // //   window.localStorage.setItem("clientRoomid", action.payload);
-      // //   state.clientRoomid = action.payload;
-      // // },
+      generateNewRoom(state: ServerStateT, action: PayloadAction<string>) {
+        const userid = action.payload;
+        if (state.users[userid].roomid !== "homeroom") {
+          throw new ApolloError("Can only Generate from homeroom");
+        }
+        if (userid === "homid") {
+          throw new ApolloError("Homie can't leave the homeroom");
+        }
+        if (!state.users[userid].online) {
+          throw new ApolloError("An Offline User cant create a room");
+        }
+        const newRoomid = uuid();
+        const userCreatingRoom = { ...state.users[userid], roomid: newRoomid };
+        state.users[userid] = userCreatingRoom;
+        const newRoom = {
+          host: userCreatingRoom,
+          users: [userCreatingRoom],
+          roomid: newRoomid,
+        };
+        state.rooms["homeroom"].users = state.rooms["homeroom"].users.filter(
+          (u) => u.userid !== userid
+        );
+        state.rooms[newRoomid] = newRoom;
+      },
       // joinExisitingRoom(state: ClinetStateT, action: PayloadAction<string>) {
       //   window.localStorage.setItem("clientRoomid", action.payload);
       //   state.clientRoomid = action.payload;
