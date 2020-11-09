@@ -3,12 +3,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ApolloError } from "apollo-server";
 import { v1 as uuid } from "uuid";
 import {
-  ClinetStateT,
   ServerStateT,
   UserT,
-  SetNameServerActionT,
   GenerateNewRoomInputT,
   JoinExistingRoomInputT,
+  SetNameInputT,
+  WelcomeInputT,
+  RoomT,
 } from "../../../../appTypes";
 import { initailServerState } from "../../../../testObjects/serverStates";
 
@@ -17,8 +18,8 @@ const rootSlice = (state: ServerStateT = initailServerState) =>
     name: "rootSlice",
     initialState: state,
     reducers: {
-      welcome(state: ServerStateT, action: PayloadAction<string>) {
-        const userid = action.payload;
+      welcome(state: ServerStateT, action: PayloadAction<WelcomeInputT>) {
+        const { userid } = action.payload;
         if (state.users[userid]) {
           // case where user is returning
           const exisitingUserRoomid = state.users[userid].roomid;
@@ -40,10 +41,7 @@ const rootSlice = (state: ServerStateT = initailServerState) =>
           state.users[userid] = newUser;
         }
       },
-      setName(
-        state: ServerStateT,
-        action: PayloadAction<SetNameServerActionT>
-      ) {
+      setName(state: ServerStateT, action: PayloadAction<SetNameInputT>) {
         const { userid, name } = action.payload;
         state.users[userid].name = name;
         const roomid = state.users[userid].roomid;
@@ -95,6 +93,22 @@ const rootSlice = (state: ServerStateT = initailServerState) =>
         if (!state.users[userid].online) {
           throw new ApolloError("An Offline User cant join a room");
         }
+        if (!state.rooms[newRoomid]) {
+          throw new ApolloError("cant join a room that does not exist");
+        }
+        const newUser: UserT = {
+          ...state.users[userid],
+          roomid: newRoomid,
+        };
+        state.users[userid] = newUser;
+        const newRoom: RoomT = {
+          ...state.rooms[newRoomid],
+          users: [...state.rooms[newRoomid].users, newUser],
+        };
+        state.rooms["homeroom"].users = state.rooms["homeroom"].users.filter(
+          (u) => u.userid !== userid
+        );
+        state.rooms[newRoomid] = newRoom;
       },
       // leaveCurrentRoom(state: ClinetStateT, action: PayloadAction<void>) {},
       // setRoom(state: ClinetStateT, action: PayloadAction<RoomT>) {

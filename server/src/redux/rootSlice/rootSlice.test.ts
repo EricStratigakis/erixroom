@@ -7,6 +7,8 @@ import {
   ericHostRoomAOnlineServerState,
   ericaHostRoomAOnlineServerState,
   newbaccaServerState,
+  ericHostRoomASonjaInHomeroomOnlineSereverState,
+  ericHostRoomASonjaInRoomAOnlineSereverState,
 } from "../../../../testObjects/serverStates";
 import { ApolloError } from "apollo-server";
 import { homid } from "../../../../testObjects/users";
@@ -27,16 +29,16 @@ describe("rootslice defenition", () => {
 describe("welcome", () => {
   const myRootSlice = rootSlice();
   test("welcome action creator", () => {
-    expect(myRootSlice.actions.welcome("newid")).toStrictEqual({
+    expect(myRootSlice.actions.welcome({ userid: "newid" })).toStrictEqual({
       type: "rootSlice/welcome",
-      payload: "newid",
+      payload: { userid: "newid" },
     });
   });
   test("welcome adds a new user", () => {
     expect(
       myRootSlice.reducer(initailServerState, {
         type: "rootSlice/welcome",
-        payload: "newid",
+        payload: { userid: "newid" },
       })
     ).toStrictEqual(WelcomeServerState);
   });
@@ -44,7 +46,7 @@ describe("welcome", () => {
     expect(
       myRootSlice.reducer(ericInHomeOfflineServerState, {
         type: "rootSlice/welcome",
-        payload: "ericid",
+        payload: { userid: "ericid" },
       })
     ).toStrictEqual(ericInHomeOnlineServerState);
   });
@@ -78,7 +80,7 @@ describe("setName", () => {
     ).toStrictEqual(ericaHostRoomAOnlineServerState);
   });
 });
-describe("joinExistingRoom", () => {
+describe("generateNewRoom", () => {
   const myRootSlice = rootSlice();
   test("generateNewRoom action creator", () => {
     expect(
@@ -182,5 +184,23 @@ describe("joinExistingRoom", () => {
         payload: { userid: "ericid", newRoomid: "whatever" },
       });
     }).toThrow(new ApolloError("An Offline User cant join a room"));
+  });
+  test("joinExistingRoom throws error if room deos not exist is offline", () => {
+    // should never see this in code by design
+    expect(() => {
+      myRootSlice.reducer(ericInHomeOnlineServerState, {
+        type: "rootSlice/joinExistingRoom",
+        payload: { userid: "ericid", newRoomid: "whatever" },
+      });
+    }).toThrow(new ApolloError("cant join a room that does not exist"));
+  });
+
+  test("sonja joins eric's roomA", () => {
+    expect(
+      myRootSlice.reducer(ericHostRoomASonjaInHomeroomOnlineSereverState, {
+        type: "rootSlice/joinExistingRoom",
+        payload: { userid: "sonjaid", newRoomid: "RoomA" },
+      })
+    ).toStrictEqual(ericHostRoomASonjaInRoomAOnlineSereverState);
   });
 });
