@@ -1,9 +1,13 @@
 import rootSlice from "./rootSlice";
 import {
-  initialServerState,
-  vanillaWelcomeResult,
-  singleUserInitialServerState,
-} from "../../../../states";
+  WelcomeServerState,
+  initailServerState,
+  ericInHomeOfflineServerState,
+  ericInHomeOnlineServerState,
+  ericHostRoomAOnlineServerState,
+  ericaHostRoomAOnlineServerState,
+  newbaccaServerState,
+} from "../../../../testObjects/serverStates";
 
 describe("rootslice defenition", () => {
   const myRootSlice = rootSlice();
@@ -19,60 +23,57 @@ describe("rootslice defenition", () => {
 });
 
 describe("welcome", () => {
+  const myRootSlice = rootSlice();
   test("welcome action creator", () => {
-    const myRootSlice = rootSlice();
-    expect(myRootSlice.actions.welcome("some uuid()")).toStrictEqual({
+    expect(myRootSlice.actions.welcome("newid")).toStrictEqual({
       type: "rootSlice/welcome",
-      payload: "some uuid()",
+      payload: "newid",
     });
   });
   test("welcome adds a new user", () => {
-    const myRootSlice = rootSlice(initialServerState);
     expect(
-      myRootSlice.reducer(initialServerState, {
+      myRootSlice.reducer(initailServerState, {
         type: "rootSlice/welcome",
-        payload: "some uuid()",
+        payload: "newid",
       })
-    ).toStrictEqual(vanillaWelcomeResult);
+    ).toStrictEqual(WelcomeServerState);
   });
-  test("welcome reactivates an old user", () => {
-    const myRootSlice = rootSlice(singleUserInitialServerState);
+  test("welcome reactivates an old user that is in home", () => {
     expect(
-      myRootSlice.reducer(singleUserInitialServerState, {
+      myRootSlice.reducer(ericInHomeOfflineServerState, {
         type: "rootSlice/welcome",
-        payload: "some uuid()",
+        payload: "ericid",
       })
-    ).toStrictEqual(vanillaWelcomeResult);
+    ).toStrictEqual(ericInHomeOnlineServerState);
   });
   //test("welcome reactivates an old user that is the host of a room", () => {
   //    can only be tested when we have ability to leave room
 });
 
-// describe("setName", () => {
-//   test("setName action creator", () => {
-//     const myRootSlice = rootSlice(blankState);
-//     expect(myRootSlice.actions.setName("eric")).toStrictEqual({
-//       type: "rootSlice/setName",
-//       payload: "eric",
-//     });
-//   });
-//   test("setName sets the user name", () => {
-//     const myRootSlice = rootSlice(blankState);
-//     expect(
-//       myRootSlice.reducer(blankState, {
-//         type: "rootSlice/setName",
-//         payload: "eric",
-//       })
-//     ).toStrictEqual({
-//       clientRoomid: "1234",
-//       user: { userid: "4321", name: "eric", online: true },
-//       room: {
-//         roomid: "homeroom",
-//         host: { userid: "homid", name: "homie", online: true },
-//         users: [{ userid: "4321", name: "eric", online: true }],
-//       },
-//     });
-// myRootSlice.actions.setName("eric")
-// expect()
-// });
-// });
+describe("setName", () => {
+  const myRootSlice = rootSlice();
+  test("setName action creator", () => {
+    expect(
+      myRootSlice.actions.setName({ userid: "newid", name: "newbacca" })
+    ).toStrictEqual({
+      type: "rootSlice/setName",
+      payload: { userid: "newid", name: "newbacca" },
+    });
+  });
+  test("setName action creator", () => {
+    expect(
+      myRootSlice.reducer(WelcomeServerState, {
+        type: "rootSlice/setName",
+        payload: { userid: "newid", name: "newbacca" },
+      })
+    ).toStrictEqual(newbaccaServerState);
+  });
+  test("setName sets the user name that is host of other room", () => {
+    expect(
+      myRootSlice.reducer(ericHostRoomAOnlineServerState, {
+        type: "rootSlice/setName",
+        payload: { userid: "ericid", name: "erica" },
+      })
+    ).toStrictEqual(ericaHostRoomAOnlineServerState);
+  });
+});

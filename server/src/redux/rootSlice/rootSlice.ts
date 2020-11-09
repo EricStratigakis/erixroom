@@ -1,10 +1,15 @@
 // import { gql, useMutation } from "@apollo/client";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // import { v1 as uuid } from "uuid";
-import { ClinetStateT, ServerStateT, UserT } from "../../../../appTypes";
-import { initialClientState, initialServerState } from "../../../../states";
+import {
+  ClinetStateT,
+  ServerStateT,
+  UserT,
+  SetNameServerActionT,
+} from "../../../../appTypes";
+import { initailServerState } from "../../../../testObjects/serverStates";
 
-const rootSlice = (state: ServerStateT = initialServerState) =>
+const rootSlice = (state: ServerStateT = initailServerState) =>
   createSlice({
     name: "rootSlice",
     initialState: state,
@@ -32,15 +37,19 @@ const rootSlice = (state: ServerStateT = initialServerState) =>
           state.users[userid] = newUser;
         }
       },
-      setName(state: ServerStateT, action: PayloadAction<ClinetStateT>) {
-        // dont worry about these updates, we get the entire room, and user from the server
-        //    this is to ensure that the server and room remain in sync, and so that we only
-        //    need to handle the logic in one place.
-        // window.localStorage.setItem("name", action.payload);
-        // const newName = action.payload;
-        // API CALL TO GQL and recive tnew USER + ROOM
-        // State = GQLChangeName(state, newName)ClientStateResponse
-        // state.user.name = name;
+      setName(
+        state: ServerStateT,
+        action: PayloadAction<SetNameServerActionT>
+      ) {
+        const { userid, name } = action.payload;
+        state.users[userid].name = name;
+        const roomid = state.users[userid].roomid;
+        state.rooms[roomid].users = state.rooms[roomid].users.map((u) =>
+          u.userid === userid ? { ...u, name: name } : u
+        );
+        if (state.rooms[roomid].host.userid === userid) {
+          state.rooms[roomid].host.name = name;
+        }
       },
       // setClientRoomid(state: ClinetStateT, action: PayloadAction<string>) {
       //   window.localStorage.setItem("clientRoomid", action.payload);
