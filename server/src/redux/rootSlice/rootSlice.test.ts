@@ -1,5 +1,9 @@
 import rootSlice from "./rootSlice";
-import { blankState, initialClientState } from "../../../../states";
+import {
+  initialServerState,
+  vanillaWelcomeResult,
+  singleUserInitialServerState,
+} from "../../../../states";
 
 describe("rootslice defenition", () => {
   const myRootSlice = rootSlice();
@@ -17,29 +21,31 @@ describe("rootslice defenition", () => {
 describe("welcome", () => {
   test("welcome action creator", () => {
     const myRootSlice = rootSlice();
-    expect(myRootSlice.actions.welcome(initialClientState)).toStrictEqual({
+    expect(myRootSlice.actions.welcome("some uuid()")).toStrictEqual({
       type: "rootSlice/welcome",
-      payload: initialClientState,
+      payload: "some uuid()",
     });
   });
-  // test("welcome sets the user name", () => {
-  //   const myRootSlice = rootSlice(blankState);
-  //   expect(
-  //     myRootSlice.reducer(blankState, {
-  //       type: "rootSlice/welcome",
-  //     })
-  //   ).toStrictEqual({
-  //     clientRoomid: "1234",
-  //     user: { userid: "4321", name: "eric", online: true },
-  //     room: {
-  //       roomid: "homeroom",
-  //       host: { userid: "homid", name: "homie", online: true },
-  //       users: [{ userid: "4321", name: "eric", online: true }],
-  //     },
-  //   });
-  //   // myRootSlice.actions.setName("eric")
-  //   // expect()
-  // });
+  test("welcome adds a new user", () => {
+    const myRootSlice = rootSlice(initialServerState);
+    expect(
+      myRootSlice.reducer(initialServerState, {
+        type: "rootSlice/welcome",
+        payload: "some uuid()",
+      })
+    ).toStrictEqual(vanillaWelcomeResult);
+  });
+  test("welcome reactivates an old user", () => {
+    const myRootSlice = rootSlice(singleUserInitialServerState);
+    expect(
+      myRootSlice.reducer(singleUserInitialServerState, {
+        type: "rootSlice/welcome",
+        payload: "some uuid()",
+      })
+    ).toStrictEqual(vanillaWelcomeResult);
+  });
+  //test("welcome reactivates an old user that is the host of a room", () => {
+  //    can only be tested when we have ability to leave room
 });
 
 // describe("setName", () => {

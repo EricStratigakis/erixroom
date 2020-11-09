@@ -9,13 +9,12 @@ export default gql`
   type Room {
     roomid: ID!
     users: [User!]
-    hostid: User!
+    host: User!
   }
-  type ServerState {
-    rooms: [Room!]
-  }
+  # type ServerState { # might only need this when dealing with real database
+  #   rooms: [Room!]
+  # }
   type ClientState {
-    clientRoomid: string;
     user: UserT;
     room: RoomT;
   }

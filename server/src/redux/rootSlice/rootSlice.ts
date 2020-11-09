@@ -1,16 +1,36 @@
 // import { gql, useMutation } from "@apollo/client";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // import { v1 as uuid } from "uuid";
-import { ClinetStateT, ServerStateT } from "../../../../appTypes";
-import { initialServerState } from "../../../../states";
+import { ClinetStateT, ServerStateT, UserT } from "../../../../appTypes";
+import { initialClientState, initialServerState } from "../../../../states";
 
 const rootSlice = (state: ServerStateT = initialServerState) =>
   createSlice({
     name: "rootSlice",
     initialState: state,
     reducers: {
-      welcome(state: ServerStateT, action: PayloadAction<ClinetStateT>) {
-        // client state = welcomeServer(state)
+      welcome(state: ServerStateT, action: PayloadAction<string>) {
+        const userid = action.payload;
+        if (state.users[userid]) {
+          // case where user is returning
+          const exisitingUserRoomid = state.users[userid].roomid;
+          state.rooms[exisitingUserRoomid].users = state.rooms[
+            exisitingUserRoomid
+          ].users.map((u) =>
+            u.userid === userid ? { ...u, online: true } : u
+          );
+          state.users[userid] = { ...state.users[userid], online: true };
+        } else {
+          // case where user is new
+          const newUser: UserT = {
+            userid,
+            name: "",
+            roomid: "homeroom",
+            online: true,
+          };
+          state.rooms["homeroom"].users.push(newUser);
+          state.users[userid] = newUser;
+        }
       },
       setName(state: ServerStateT, action: PayloadAction<ClinetStateT>) {
         // dont worry about these updates, we get the entire room, and user from the server

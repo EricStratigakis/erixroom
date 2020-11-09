@@ -1,26 +1,6 @@
 import { ApolloError } from "apollo-server";
 import { RoomT, ServerStateT } from "../../appTypes";
 
-const state: ServerStateT = {
-  rooms: [
-    {
-      roomid: "homeroom",
-      host: {
-        name: "homie",
-        userid: "homid",
-        online: true,
-      },
-      users: [
-        {
-          name: "homie",
-          userid: "homid",
-          online: true,
-        },
-      ],
-    },
-  ],
-};
-
 export default {
   Query: {
     getRooms: (_: any, {}: any): RoomT[] | ApolloError => {
