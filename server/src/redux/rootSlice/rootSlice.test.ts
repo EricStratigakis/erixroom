@@ -204,7 +204,6 @@ describe("joinExistingRoom", () => {
     ).toStrictEqual(ericHostRoomASonjaInRoomAOnlineSereverState);
   });
 });
-
 describe("leaveCurrentRoom", () => {
   const myRootSlice = rootSlice();
   test("leaveCurrentRoom action creator", () => {
