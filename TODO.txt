@@ -20,4 +20,29 @@ client Redux Actions:
     -> setName
         -> client sends client state + new name
         -> server updates the name in all apropriate places (inroom and if host)
-        
+
+
+
+client utilizes a 
+
+    ClinetStateT {
+        room
+        user
+    }
+
+    ClientState === ClientStateT
+
+    ServerStateT {
+        rooms {
+            roomid1 : room1
+            roomid2 : room2
+        }
+    }
+
+
+    ServerStateT => ServerState
+        [...ServerStateT.rooms]
+
+    ServerState: {
+        rooms
+    }

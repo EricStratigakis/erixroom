@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.welcome = void 0;
 // import { gql, useMutation } from "@apollo/client";
 const toolkit_1 = require("@reduxjs/toolkit");
 const apollo_server_1 = require("apollo-server");
@@ -104,13 +105,6 @@ const rootSlice = (state = serverStates_1.initailServerState) => toolkit_1.creat
         },
     },
 });
-// export const {
-//   setName,
-//   // generateNewRoom,
-//   joinExisitingRoom,
-//   leaveCurrentRoom,
-//   setClientRoomid,
-//   setRoom,
-// } = rootSlice.actions;
+exports.welcome = rootSlice().actions.welcome;
 exports.default = rootSlice;
 //# sourceMappingURL=rootSlice.js.map

@@ -1,4 +1,5 @@
 export type UserT = {
+  roomid: string;
   userid: string;
   name: string;
   online: boolean;
@@ -9,33 +10,31 @@ export type RoomT = {
   host: UserT;
 };
 export type ServerStateT = {
-  rooms: RoomT[];
+  rooms: { [roomid: string]: RoomT };
+  users: { [userid: string]: UserT };
 };
 export type ClinetStateT = {
-  clientRoomid: string;
   user: UserT;
   room: RoomT;
-};
-export type generateNewRoomInputT = {
-  userid: string;
-  name: string;
-  roomid: string;
-};
-export type joinExisitingRoomInputT = {
-  userid: string;
-  name: string;
-  roomid: string;
-};
-export type leaveCurrentRoomInputT = {
-  userid: string;
-  name: string;
-  roomid: string;
 };
 export type StoreT = {
   root: ClinetStateT;
 };
-
-export type SetNameActionT = {
-  user: UserT;
+// redux server
+export type WelcomeInputT = {
+  userid: string;
+};
+export type SetNameInputT = {
+  userid: string;
   name: string;
+};
+export type GenerateNewRoomInputT = {
+  userid: string;
+};
+export type JoinExistingRoomInputT = {
+  newRoomid: string;
+  userid: string;
+};
+export type LeaveCurrentRoomInputT = {
+  userid: string;
 };

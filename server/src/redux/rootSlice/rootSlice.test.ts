@@ -51,8 +51,6 @@ describe("welcome", () => {
       })
     ).toStrictEqual(ericInHomeOnlineServerState);
   });
-  //test("welcome reactivates an old user that is the host of a room", () => {
-  //    can only be tested when we have ability to leave room
 });
 describe("setName", () => {
   const myRootSlice = rootSlice();

@@ -143,13 +143,13 @@ const rootSlice = (state: ServerStateT = initailServerState) =>
     },
   });
 
-// export const {
-//   setName,
-//   // generateNewRoom,
-//   joinExisitingRoom,
-//   leaveCurrentRoom,
-//   setClientRoomid,
-//   setRoom,
-// } = rootSlice.actions;
+export const {
+  welcome,
+  // generateNewRoom,
+  // joinExisitingRoom,
+  // leaveCurrentRoom,
+  // setClientRoomid,
+  // setRoom,
+} = rootSlice().actions;
 
 export default rootSlice;

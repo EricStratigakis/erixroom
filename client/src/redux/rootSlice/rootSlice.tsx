@@ -1,33 +1,46 @@
-// import { gql, useMutation } from "@apollo/client";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { v1 as uuid } from "uuid";
-import { ClinetStateT } from "../../../../appTypes";
-import { initialState } from "../states";
+import { ClinetStateT, RoomT, UserT } from "../../../../appTypes";
 
-const rootSlice = (state: ClinetStateT = initialState) =>
+const unknownInitialUser: UserT = {
+  userid: "unknow",
+  name: "unknown",
+  online: false,
+  roomid: "unknown",
+};
+
+const unknownInitalRoom: RoomT = {
+  users: [unknownInitialUser],
+  roomid: "unknown",
+  host: unknownInitialUser,
+};
+
+const initalClientState: ClinetStateT = {
+  user: unknownInitialUser,
+  room: unknownInitalRoom,
+};
+
+const rootSlice = (state: ClinetStateT = initalClientState) =>
   createSlice({
     name: "rootSlice",
     initialState: state,
     reducers: {
-      welcome(state: ClinetStateT) {
-        window.localStorage.setItem(
-          "userid",
-          window.localStorage.getItem("userid") || uuid()
-        );
-        // client state = welcomeServer(state)
+      welcome(state: ClinetStateT, action: PayloadAction<ClinetStateT>) {
+        console.log(action.payload);
+        state.room = action.payload.room;
+        state.user = action.payload.user;
       },
-      setName(state: ClinetStateT, action: PayloadAction<string>) {
-        // dont worry about these updates, we get the entire room, and user from the server
-        //    this is to ensure that the server and room remain in sync, and so that we only
-        //    need to handle the logic in one place.
-        // window.localStorage.setItem("name", action.payload);
-        const newName = action.payload;
+      // setName(state: ClinetStateT, action: PayloadAction<string>) {
+      // dont worry about these updates, we get the entire room, and user from the server
+      //    this is to ensure that the server and room remain in sync, and so that we only
+      //    need to handle the logic in one place.
+      // window.localStorage.setItem("name", action.payload);
+      // const newName = action.payload;
 
-        // API CALL TO GQL and recive tnew USER + ROOM
-        // State = GQLChangeName(state, newName)ClientStateResponse
+      // API CALL TO GQL and recive tnew USER + ROOM
+      // State = GQLChangeName(state, newName)ClientStateResponse
 
-        // state.user.name = name;
-      },
+      // state.user.name = name;
+      // },
       // setClientRoomid(state: ClinetStateT, action: PayloadAction<string>) {
       //   window.localStorage.setItem("clientRoomid", action.payload);
       //   state.clientRoomid = action.payload;
@@ -48,13 +61,13 @@ const rootSlice = (state: ClinetStateT = initialState) =>
     },
   });
 
-// export const {
-//   setName,
-//   // generateNewRoom,
-//   joinExisitingRoom,
-//   leaveCurrentRoom,
-//   setClientRoomid,
-//   setRoom,
-// } = rootSlice.actions;
+export const {
+  welcome,
+  // generateNewRoom,
+  // joinExisitingRoom,
+  // leaveCurrentRoom,
+  // setClientRoomid,
+  // setRoom,
+} = rootSlice().actions;
 
 export default rootSlice;
